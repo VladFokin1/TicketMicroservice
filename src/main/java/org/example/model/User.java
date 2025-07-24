@@ -15,10 +15,13 @@ public class User implements UserDetails {
     private String login;
     private String password;
     private String fullName;
-
+    private Role role;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        if (role == null) {
+            return Collections.emptyList();
+        }
+        return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

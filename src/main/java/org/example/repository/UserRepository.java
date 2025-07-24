@@ -1,5 +1,6 @@
 package org.example.repository;
 import org.apache.commons.lang3.NotImplementedException;
+import org.example.model.Role;
 import org.example.model.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,8 +24,8 @@ public class UserRepository {
     }
 
     public void save(User user) {
-        String sql = "INSERT INTO users (login, password, full_name) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, user.getLogin(), user.getPassword(), user.getFullName());
+        String sql = "INSERT INTO users (login, password, full_name, role) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, user.getLogin(), user.getPassword(), user.getFullName(), user.getRole().toString());
     }
 
     public boolean existsByLogin(String login) {
@@ -43,7 +44,7 @@ public class UserRepository {
     }
 
     public Optional<UserDetails> findByLogin(String username) {
-        String sql = "SELECT id, login, password, full_name FROM users WHERE login = ?";
+        String sql = "SELECT id, login, password, full_name, role FROM users WHERE login = ?";
 
         try {
             User user = jdbcTemplate.queryForObject(sql, new UserRowMapper(), username);
@@ -62,6 +63,7 @@ public class UserRepository {
             user.setLogin(rs.getString("login"));
             user.setPassword(rs.getString("password"));
             user.setFullName(rs.getString("full_name"));
+            user.setRole(Role.valueOf(rs.getString("role")));
             return user;
         }
     }

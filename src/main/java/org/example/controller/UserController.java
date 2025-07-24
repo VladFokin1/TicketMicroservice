@@ -24,14 +24,5 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(summary = "Регистрация нового пользователя")
-    @ApiResponse(responseCode = "201", description = "Пользователь успешно зарегистрирован")
-    @ApiResponse(responseCode = "400", description = "Ошибка валидации",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    @ApiResponse(responseCode = "409", description = "Логин уже существует")
-    @PostMapping("/register")
-    public ResponseEntity<Void> registerUser(@Valid @RequestBody UserRegistrationDto userDto) {
-        userService.registerUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+
 }

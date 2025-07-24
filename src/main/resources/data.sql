@@ -14,10 +14,10 @@ INSERT INTO routes (departure_point, destination_point, carrier_id, duration_min
 
 -- Пользователи (пароли захешированы с помощью BCrypt)
 -- Пароль для всех: TestPassword123!
-INSERT INTO users (login, password, full_name) VALUES
-('ivanov', '$2a$12$/uOR2FL5SMtO.pj30XpZvOS58wtn0..zm7SW6Q.ThKWjF/5Bu/6Ku', 'Иванов Иван Иванович'),
-('petrov', '$2a$12$/uOR2FL5SMtO.pj30XpZvOS58wtn0..zm7SW6Q.ThKWjF/5Bu/6Ku', 'Петров Петр Петрович'),
-('sidorova', '$2a$12$/uOR2FL5SMtO.pj30XpZvOS58wtn0..zm7SW6Q.ThKWjF/5Bu/6Ku', 'Сидорова Мария Ивановна');
+INSERT INTO users (login, password, full_name, role) VALUES
+('ivanov', '$2a$12$/uOR2FL5SMtO.pj30XpZvOS58wtn0..zm7SW6Q.ThKWjF/5Bu/6Ku', 'Иванов Иван Иванович', 'ROLE_CUSTOMER'),
+('petrov', '$2a$12$/uOR2FL5SMtO.pj30XpZvOS58wtn0..zm7SW6Q.ThKWjF/5Bu/6Ku', 'Петров Петр Петрович', 'ROLE_CUSTOMER'),
+('sidorova', '$2a$12$/uOR2FL5SMtO.pj30XpZvOS58wtn0..zm7SW6Q.ThKWjF/5Bu/6Ku', 'Сидорова Мария Ивановна', 'ROLE_ADMIN');
 
 -- Билеты
 INSERT INTO tickets (route_id, date_time, seat_number, price, user_id) VALUES

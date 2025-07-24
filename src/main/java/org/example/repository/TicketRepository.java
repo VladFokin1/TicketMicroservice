@@ -1,5 +1,5 @@
 package org.example.repository;
-import org.example.dto.TicketFilterDto;
+import org.example.dto.ticket.TicketFilterDto;
 import org.example.model.Ticket;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -78,6 +78,38 @@ public class TicketRepository {
     public List<Ticket> findByUserId(Long userId) {
         String sql = "SELECT * FROM tickets WHERE user_id = ?";
         return jdbcTemplate.query(sql, new TicketRowMapper(), userId);
+    }
+
+    public void save(Ticket ticket) {
+        if (ticket.getId() == null) {
+            String sql = "INSERT INTO tickets (route_id, date_time, seat_number, price, user_id) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+            jdbcTemplate.update(sql,
+                    ticket.getRouteId(),
+                    ticket.getDateTime(),
+                    ticket.getSeatNumber(),
+                    ticket.getPrice(),
+                    ticket.getUserId());
+        } else {
+            String sql = "UPDATE tickets SET route_id = ?, date_time = ?, seat_number = ?, " +
+                    "price = ?, user_id = ? WHERE id = ?";
+            jdbcTemplate.update(sql,
+                    ticket.getRouteId(),
+                    ticket.getDateTime(),
+                    ticket.getSeatNumber(),
+                    ticket.getPrice(),
+                    ticket.getUserId(),
+                    ticket.getId());
+        }
+    }
+    public void delete(Long id) {
+        String sql = "DELETE FROM tickets WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public List<Ticket> getAll() {
+        String sql = "SELECT * FROM tickets";
+        return jdbcTemplate.query(sql, new TicketRowMapper());
     }
 
     private static class TicketRowMapper implements RowMapper<Ticket> {

@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     login VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
-    full_name VARCHAR(100) NOT NULL
+    full_name VARCHAR(100) NOT NULL,
+    role VARCHAR(20) NOT NULL default 'ROLE_CUSTOMER'
 );
 
 CREATE TABLE IF NOT EXISTS refresh_tokens (

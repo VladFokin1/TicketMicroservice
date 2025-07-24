@@ -1,4 +1,4 @@
-package org.example.dto;
+package org.example.dto.ticket;
 
 import jakarta.validation.constraints.Size;
 import lombok.Data;

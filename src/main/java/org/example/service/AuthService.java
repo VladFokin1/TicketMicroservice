@@ -1,8 +1,8 @@
 package org.example.service;
 
-import org.example.dto.AuthRequest;
-import org.example.dto.AuthResponse;
-import org.example.dto.RefreshTokenRequest;
+import org.example.dto.auth.AuthRequest;
+import org.example.dto.auth.AuthResponse;
+import org.example.dto.auth.RefreshTokenRequest;
 import org.example.dto.UserRegistrationDto;
 import org.example.model.RefreshToken;
 import org.example.model.User;
@@ -109,6 +109,7 @@ public class AuthService {
         user.setLogin(registrationDto.getLogin());
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         user.setFullName(registrationDto.getFullName());
+        user.setRole(registrationDto.getRole());
 
         userRepository.save(user);
     }

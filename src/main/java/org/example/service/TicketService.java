@@ -1,6 +1,9 @@
 package org.example.service;
 
-import org.example.dto.TicketFilterDto;
+import org.example.dto.ticket.TicketCreateDto;
+import org.example.dto.ticket.TicketFilterDto;
+import org.example.dto.ticket.TicketUpdateDto;
+import org.example.exception.NotFoundException;
 import org.example.model.Ticket;
 import org.example.repository.TicketRepository;
 import org.example.repository.UserRepository;
@@ -60,5 +63,39 @@ public class TicketService {
                 .orElseThrow(() -> new EmptyResultDataAccessException("Пользователь не найден", 1));
 
         return ticketRepository.findByUserId(userId);
+    }
+
+    public Ticket createTicket(TicketCreateDto dto) {
+        Ticket ticket = new Ticket();
+        ticket.setRouteId(dto.getRouteId());
+        ticket.setDateTime(dto.getDateTime());
+        ticket.setSeatNumber(dto.getSeatNumber());
+        ticket.setPrice(dto.getPrice());
+
+        ticketRepository.save(ticket);
+        return ticket;
+    }
+
+    public Ticket updateTicket(Long id, TicketUpdateDto dto) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Ticket not found"));
+
+        ticket.setDateTime(dto.getDateTime());
+        ticket.setSeatNumber(dto.getSeatNumber());
+        ticket.setPrice(dto.getPrice());
+
+        ticketRepository.save(ticket);
+        return ticket;
+    }
+
+    public void deleteTicket(Long id) {
+        if (!ticketRepository.findById(id).isPresent()) {
+            throw new NotFoundException("Ticket not found");
+        }
+        ticketRepository.delete(id);
+    }
+
+    public List<Ticket> getAllTickets() {
+        return ticketRepository.getAll();
     }
 }
