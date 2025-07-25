@@ -21,10 +21,14 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final TicketCacheService ticketCacheService;
 
-    public TicketService(TicketRepository ticketRepository, UserRepository userRepository) {
+    public TicketService(TicketRepository ticketRepository,
+                         UserRepository userRepository,
+                         TicketCacheService ticketCacheService) {
         this.ticketRepository = ticketRepository;
         this.userRepository = userRepository;
+        this.ticketCacheService = ticketCacheService;
     }
 
     public Page<Ticket> getAvailableTickets(TicketFilterDto filter, int page, int size) {
@@ -55,6 +59,7 @@ public class TicketService {
 
         // Обновление билета
         ticketRepository.updateUserId(ticketId, userId);
+        ticketCacheService.evictUserCache(userId);
     }
 
     public List<Ticket> getPurchasedTickets(Long userId) {
@@ -62,7 +67,18 @@ public class TicketService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new EmptyResultDataAccessException("Пользователь не найден", 1));
 
-        return ticketRepository.findByUserId(userId);
+        //проверка в кэше
+        List<Ticket> cachedTickets = ticketCacheService.getCachedTickets(userId);
+        if (!cachedTickets.isEmpty()) {
+            System.out.println("Возврат с кэша");
+            return cachedTickets;
+        }
+
+        //загрузка из бд и кэширование
+        List<Ticket> dbTickets = ticketRepository.findByUserId(userId);
+        ticketCacheService.cacheTickets(userId, dbTickets);
+        System.out.println("Возврат с БД + кеширование");
+        return dbTickets;
     }
 
     public Ticket createTicket(TicketCreateDto dto) {
