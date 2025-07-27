@@ -34,6 +34,7 @@
     <filter-actions connection-id="eb9844db-7451-4910-a000-681fded1e4ea" dataset="public.refresh_tokens" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="eb9844db-7451-4910-a000-681fded1e4ea" dataset="public.routes" active-filter-id="" />
     <filter-actions connection-id="eb9844db-7451-4910-a000-681fded1e4ea" dataset="public.carriers" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="eb9844db-7451-4910-a000-681fded1e4ea" dataset="public.ticket_purchase_events" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="eb9844db-7451-4910-a000-681fded1e4ea" dataset="public.tickets" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">

@@ -2,6 +2,7 @@ package org.example.service;
 
 import org.example.dto.ticket.TicketCreateDto;
 import org.example.dto.ticket.TicketFilterDto;
+import org.example.dto.ticket.TicketPurchaseEvent;
 import org.example.dto.ticket.TicketUpdateDto;
 import org.example.exception.NotFoundException;
 import org.example.model.Ticket;
@@ -11,6 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +24,16 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
     private final TicketCacheService ticketCacheService;
+    private final KafkaTemplate<String, TicketPurchaseEvent> kafkaTemplate;
 
     public TicketService(TicketRepository ticketRepository,
                          UserRepository userRepository,
-                         TicketCacheService ticketCacheService) {
+                         TicketCacheService ticketCacheService,
+                         KafkaTemplate<String, TicketPurchaseEvent> kafkaTemplate) {
         this.ticketRepository = ticketRepository;
         this.userRepository = userRepository;
         this.ticketCacheService = ticketCacheService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public Page<Ticket> getAvailableTickets(TicketFilterDto filter, int page, int size) {
@@ -60,6 +65,17 @@ public class TicketService {
         // Обновление билета
         ticketRepository.updateUserId(ticketId, userId);
         ticketCacheService.evictUserCache(userId);
+
+        // Создаем событие для Kafka
+        TicketPurchaseEvent event = new TicketPurchaseEvent();
+        event.setTicketId(ticketId);
+        event.setUserId(userId);
+        event.setPrice(ticket.getPrice());
+        event.setRouteId(ticket.getRouteId().longValue());
+        event.setDateTime(ticket.getDateTime());
+        event.setSeatNumber(ticket.getSeatNumber());
+
+        kafkaTemplate.send("ticket-purchases", event);
     }
 
     public List<Ticket> getPurchasedTickets(Long userId) {
@@ -70,14 +86,12 @@ public class TicketService {
         //проверка в кэше
         List<Ticket> cachedTickets = ticketCacheService.getCachedTickets(userId);
         if (!cachedTickets.isEmpty()) {
-            System.out.println("Возврат с кэша");
             return cachedTickets;
         }
 
         //загрузка из бд и кэширование
         List<Ticket> dbTickets = ticketRepository.findByUserId(userId);
         ticketCacheService.cacheTickets(userId, dbTickets);
-        System.out.println("Возврат с БД + кеширование");
         return dbTickets;
     }
 
